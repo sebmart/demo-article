@@ -6,6 +6,7 @@
 GET     /                           controllers.Application.index
 
 #Demos
+GET     /freeway                    controllers.Application.freeway
 GET     /demo1                      controllers.Application.demo1
 GET     /demo2                      controllers.Application.demo2
 GET     /demo3                      controllers.Application.demo3
