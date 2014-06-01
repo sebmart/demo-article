@@ -12,16 +12,8 @@ function clearConsole() {
 /*Graph Bar
 ***************************/
 
-//To be sent via JSON
-var simul_data  = [[1.,1.,.5,.8],
-                   [1.,1.2,1.5,2.],
-                   [2.,1.8,1.,1.],
-                   [0.,0.2,1.,1.9],
-                   [2,1.7,1.8,2],
-                   [2,1.5,1,1]];
-
-var max_density = 2.;
-var critical_density = 1.;
+//To be filled via JSON
+var simul_data;
 
 //Global Parameters
 var graph_params = {
@@ -29,14 +21,25 @@ var graph_params = {
     play_time: 6
 }
 
-
+//fetch and draw the data
+function initSimul(simulName){
+    var data; // a global
+    console.info("simulation/" + simulName + ".json")
+    d3.json("simulation/" + simulName + ".json", function(error, json) {
+      if (error) return console.warn(error);
+      simul_data = json;
+      drawSimul();
+    });
+}
 
 
 //return the width of the simulation (depend on the window size)
 function getSimulWidth(){ return $("#simul").width()}
 
 //Return the color given the density (Don't accept negative densities !)
-function densityColors(dens){
+function densityColors(dens,i){
+    critical_density = simul_data.criticalDensity[i];
+    max_density = simul_data.maxDensity[i];
     if(dens < critical_density)
         return "hsl(90,69%," +  40 *( 2 - dens/critical_density)+"%)";
     else
@@ -44,11 +47,11 @@ function densityColors(dens){
 }
 
 //Draw a simulation
-function initSimul(){
+function drawSimul(){
 
     var w = getSimulWidth();
-    var space_length = simul_data[0].length;
-    var time_length = simul_data.length;
+    var space_length = simul_data.density[0].length;
+    var time_length = simul_data.density.length;
 
     //Init the slider
     $( "#time_slider" ).slider({ animate: "fast",
@@ -67,7 +70,7 @@ function initSimul(){
                         .range([0, w]);
 
     svg.selectAll("rect")
-       .data(simul_data[0])
+       .data(simul_data.density[0])
        .enter()
        .append("rect")
        .attr("x", function(d,i){;
@@ -76,8 +79,8 @@ function initSimul(){
        .attr("y", 0)
        .attr("width", w/space_length +1)
        .attr("height", graph_params.height)
-       .attr("fill", function(d) {
-           return densityColors(d);
+       .attr("fill", function(d,i) {
+           return densityColors(d,i);
        });
         $( window ).resize(function() {
             resizeSimul();
@@ -89,7 +92,7 @@ function initSimul(){
 function updateSimul(){
 
     var w = getSimulWidth();
-    var space_length = simul_data[0].length;
+    var space_length = simul_data.density[0].length;
     var time = $( "#time_slider" ).slider( "value" );
     var position_scale = d3.scale.linear()
                                 .domain([0, space_length])
@@ -97,10 +100,10 @@ function updateSimul(){
 
     d3.select("#simul svg")
       .selectAll("rect")
-       .data(simul_data[time])
+       .data(simul_data.density[time])
        .transition()
-       .attr("fill", function(d) {
-           return densityColors(d);
+       .attr("fill", function(d,i) {
+           return densityColors(d,i);
        });
 
 }
@@ -108,7 +111,7 @@ function updateSimul(){
 //Called when the size of the window is changing
 function resizeSimul(){
     var w = getSimulWidth();
-    var space_length = simul_data[0].length;
+    var space_length = simul_data.density[0].length;
 
     var position_scale = d3.scale.linear()
                             .domain([0, space_length])
@@ -118,7 +121,7 @@ function resizeSimul(){
     svg.attr("width", w);
 
     svg.selectAll("rect")
-       .data(simul_data)
+       .data(simul_data.density[$( "#time_slider" ).slider( "value" )])
        .attr("x", function(d,i){;
             return Math.floor(position_scale(i));
        })
@@ -134,7 +137,7 @@ function stopSim() {
     play = false;
 }
 function playUpdate(){
-    var time_length = simul_data.length;
+    var time_length = simul_data.density.length;
     if($( "#time_slider" ).slider( "value" ) == (time_length - 1))
         stopSim();
     else
@@ -145,7 +148,7 @@ function playSimul(){
     if(play)
         stopSim()
     else {
-        var time_length = simul_data.length;
+        var time_length = simul_data.density.length;
         var time_interval = graph_params.play_time * 1000 / time_length;
         playSim = setInterval(playUpdate, time_interval);
         play = true;
