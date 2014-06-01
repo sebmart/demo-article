@@ -2,9 +2,5 @@
 
 //To be executed when the page is loaded
 $(document).ready(function(){
-    drawSimul();
+    initSimul();
 })
-
-$( window ).resize(function() {
-    drawSimul();
-});
