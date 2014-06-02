@@ -57,7 +57,7 @@ function drawSimul(){
     $( "#time_slider" ).slider({ animate: "fast",
                                  max: (time_length - 1),
                                  min: 0,
-                                 change: function( event, ui ) {updateSimul()}});
+                                 slide: function( event, ui ) {updateSimul()}});
     //Init the play button
     $("#play_button").click(playSimul);
     //Drawing the svg
