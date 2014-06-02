@@ -35,7 +35,6 @@ var graph_params = {
 //fetch and draw the data
 function initSimul(simulName){
     var data; // a global
-    console.info("simulation/" + simulName + ".json")
     d3.json("simulation/" + simulName + ".json", function(error, json) {
       if (error) return console.warn(error);
       graph_params.simul_data = json;
@@ -96,6 +95,9 @@ function drawSimul(){
             resizeSimul();
         });
     consoleMessage("Simulation loaded");
+    $.event.trigger({
+    	type: "simulation_loaded"
+    });
 }
 
 //Called when the slider is moving

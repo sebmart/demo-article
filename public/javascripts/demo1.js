@@ -2,49 +2,28 @@
 
 //To be executed when the page is loaded, first simulation
 $(document).ready(function(){
-    initSimul("test2");
-    initJamTools();
+    $(document).on("simulation_loaded", initJamTools);
+    initSimul("test1");
 })
+
 
 
 //Draw a simulation
 function initJamTools(){
 
-    var w = getSimulWidth();
-    var space_length = simul_data.density[0].length;
-    var time_length = simul_data.density.length;
+    //Init the jams range sliders
+    console.info(graph_params.time_length);
+    $( "#jam_time_slider" ).slider({ range: true,
+                                     animate: "fast",
+                                     max: graph_params.time_length - 1,
+                                     min: 0,
+                                     values : [Math.round((graph_params.time_length - 1)/3.),Math.round((graph_params.time_length - 1)*2/3.)]});
+    $( "#jam_space_slider" ).slider({ animate: "fast",
+                                     range: true,
+                                     max: graph_params.space_length,
+                                     min: 0,
+                                     values : [Math.round((graph_params.space_length - 1)/3.),Math.round((graph_params.space_length - 1)*2/3.)]});
 
-    //Init the slider
-    $( "#time_slider" ).slider({ animate: "fast",
-                                 max: (time_length - 1),
-                                 min: 0,
-                                 slide: function( event, ui ) {updateSimul()}});
-    //Init the play button
-    $("#play_button").click(playSimul);
-    //Drawing the svg
-    var svg = d3.select("#simul").append("svg");
-    svg.attr("width", w)
-       .attr("height", graph_params.height);
 
-    var position_scale = d3.scale.linear()
-                        .domain([0, space_length])
-                        .range([0, w]);
-
-    svg.selectAll("rect")
-       .data(simul_data.density[0])
-       .enter()
-       .append("rect")
-       .attr("x", function(d,i){;
-            return Math.floor(position_scale(i));
-       })
-       .attr("y", 0)
-       .attr("width", w/space_length +1)
-       .attr("height", graph_params.height)
-       .attr("fill", function(d,i) {
-           return densityColors(d,i);
-       });
-        $( window ).resize(function() {
-            resizeSimul();
-        });
-    consoleMessage("Simulation loaded");
+    consoleMessage("Jam creator loaded");
 }
