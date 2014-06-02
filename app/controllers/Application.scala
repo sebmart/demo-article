@@ -15,7 +15,9 @@ object Application extends Controller {
     Ok(views.html.freeway())
   }
 
-  def demo1 = TODO
+  def demo1 = Action {
+    Ok(views.html.demo1())
+  }
 
   def demo2 = TODO
 

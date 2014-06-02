@@ -17,8 +17,19 @@ var simul_data;
 
 //Global Parameters
 var graph_params = {
+//to be modified by hand
     height: 60,
-    play_time: 30
+    play_time: 30,
+
+//Automatically set up
+    width: getSimulWidth(),
+    play : false,
+    playSim : void 0,
+    simul_data : void 0,
+    position_scale : void 0,
+    space_length : void 0,
+    time_length : void 0,
+
 }
 
 //fetch and draw the data
@@ -27,7 +38,7 @@ function initSimul(simulName){
     console.info("simulation/" + simulName + ".json")
     d3.json("simulation/" + simulName + ".json", function(error, json) {
       if (error) return console.warn(error);
-      simul_data = json;
+      graph_params.simul_data = json;
       drawSimul();
     });
 }
@@ -38,8 +49,8 @@ function getSimulWidth(){ return $("#simul").width()}
 
 //Return the color given the density (Don't accept negative densities !)
 function densityColors(dens,i){
-    critical_density = simul_data.criticalDensity[i];
-    max_density = simul_data.maxDensity[i];
+    critical_density = graph_params.simul_data.criticalDensity[i];
+    max_density = graph_params.simul_data.maxDensity[i];
     if(dens < critical_density)
         return "hsl(90,69%," +  40 *( 2 - dens/critical_density)+"%)";
     else
@@ -49,35 +60,34 @@ function densityColors(dens,i){
 //Draw a simulation
 function drawSimul(){
 
-    var w = getSimulWidth();
-    var space_length = simul_data.density[0].length;
-    var time_length = simul_data.density.length;
+    graph_params.space_length = graph_params.simul_data.density[0].length;
+    graph_params.time_length = graph_params.simul_data.density.length;
 
     //Init the slider
     $( "#time_slider" ).slider({ animate: "fast",
-                                 max: (time_length - 1),
+                                 max: (graph_params.time_length - 1),
                                  min: 0,
                                  slide: function( event, ui ) {updateSimul()}});
     //Init the play button
     $("#play_button").click(playSimul);
     //Drawing the svg
     var svg = d3.select("#simul").append("svg");
-    svg.attr("width", w)
+    svg.attr("width", graph_params.width)
        .attr("height", graph_params.height);
 
-    var position_scale = d3.scale.linear()
-                        .domain([0, space_length])
-                        .range([0, w]);
+    graph_params.position_scale = d3.scale.linear()
+                        .domain([0, graph_params.space_length])
+                        .range([0, graph_params.width]);
 
     svg.selectAll("rect")
-       .data(simul_data.density[0])
+       .data(graph_params.simul_data.density[0])
        .enter()
        .append("rect")
        .attr("x", function(d,i){;
-            return Math.floor(position_scale(i));
+            return Math.floor(graph_params.position_scale(i));
        })
        .attr("y", 0)
-       .attr("width", w/space_length +1)
+       .attr("width", graph_params.width/graph_params.space_length +1)
        .attr("height", graph_params.height)
        .attr("fill", function(d,i) {
            return densityColors(d,i);
@@ -90,17 +100,11 @@ function drawSimul(){
 
 //Called when the slider is moving
 function updateSimul(){
-
-    var w = getSimulWidth();
-    var space_length = simul_data.density[0].length;
     var time = $( "#time_slider" ).slider( "value" );
-    var position_scale = d3.scale.linear()
-                                .domain([0, space_length])
-                                .range([0, w]);
 
     d3.select("#simul svg")
       .selectAll("rect")
-       .data(simul_data.density[time])
+       .data(graph_params.simul_data.density[time])
        .transition()
        .attr("fill", function(d,i) {
            return densityColors(d,i);
@@ -110,35 +114,32 @@ function updateSimul(){
 
 //Called when the size of the window is changing
 function resizeSimul(){
-    var w = getSimulWidth();
-    var space_length = simul_data.density[0].length;
+    graph_params.width = getSimulWidth();
 
-    var position_scale = d3.scale.linear()
-                            .domain([0, space_length])
-                            .range([0, w]);
+    graph_params.position_scale = d3.scale.linear()
+                            .domain([0, graph_params.space_length])
+                            .range([0, graph_params.width]);
 
     var svg = d3.select("#simul svg");
-    svg.attr("width", w);
+    svg.attr("width", graph_params.width);
 
     svg.selectAll("rect")
-       .data(simul_data.density[$( "#time_slider" ).slider( "value" )])
+       .data(graph_params.simul_data.density[$( "#time_slider" ).slider( "value" )])
        .attr("x", function(d,i){;
-            return Math.floor(position_scale(i));
+            return Math.floor(graph_params.position_scale(i));
        })
-       .attr("width", w/space_length+1)
+       .attr("width", graph_params.width/graph_params.space_length+1)
 ;
 }
 
 //Handle the Simulation play
-var play = false;
-var playSim;
+
 function stopSim() {
-    clearInterval(playSim);
-    play = false;
+    clearInterval(graph_params.playSim);
+    graph_params.play = false;
 }
 function playUpdate(){
-    var time_length = simul_data.density.length;
-    if($( "#time_slider" ).slider( "value" ) == (time_length - 1))
+    if($( "#time_slider" ).slider( "value" ) == (graph_params.time_length - 1))
         stopSim();
     else{
         $( "#time_slider" ).slider( "value", ($( "#time_slider" ).slider( "value") + 1) );
@@ -147,14 +148,12 @@ function playUpdate(){
 }
 //called when play button is clicked
 function playSimul(){
-    if(play)
+    if(graph_params.play)
         stopSim()
     else {
-        var time_length = simul_data.density.length;
-        var time_interval = graph_params.play_time * 1000 / time_length;
-        playSim = setInterval(playUpdate, time_interval);
-        play = true;
-
+        var time_interval = graph_params.play_time * 1000 / graph_params.time_length;
+        graph_params.playSim = setInterval(playUpdate, time_interval);
+        graph_params.play = true;
     }
 }
 
