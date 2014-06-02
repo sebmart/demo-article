@@ -18,7 +18,7 @@ var simul_data;
 //Global Parameters
 var graph_params = {
     height: 60,
-    play_time: 6
+    play_time: 30
 }
 
 //fetch and draw the data
@@ -140,8 +140,10 @@ function playUpdate(){
     var time_length = simul_data.density.length;
     if($( "#time_slider" ).slider( "value" ) == (time_length - 1))
         stopSim();
-    else
+    else{
         $( "#time_slider" ).slider( "value", ($( "#time_slider" ).slider( "value") + 1) );
+        updateSimul();
+    }
 }
 //called when play button is clicked
 function playSimul(){
