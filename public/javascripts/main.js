@@ -16,7 +16,7 @@ function clearConsole() {
 var params = {
 //to be modified by hand
     height: 60,
-    play_time: 30,
+    play_time: 12,
     simul_name : "morse",
     demo12_scenario : "smallerfc",
 
