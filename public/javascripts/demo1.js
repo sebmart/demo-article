@@ -29,7 +29,7 @@ function initJamTools(){
 
 //Load a box jam created with the parameters of the User
 function initJam(){
-    consoleMessage("....Please wait, we are taking control on the traffic lights to create your jam");
+    consoleMessage("....Please wait, we are taking control of the traffic lights to create your jam");
     var xval = $( "#jam_space_slider" ).slider("values");
     var tval = $( "#jam_time_slider" ).slider("values");
     d3.xhr("/jam")

@@ -13,10 +13,10 @@ function initMorseTools(){
 }
 
 function initMorse(){
-    consoleMessage("Analysing your initials...")
-    consoleMessage("Conversion to morse...")
+    consoleMessage("Analyzing your initials...")
+    consoleMessage("Converting to morse...")
 
-    consoleMessage("Taking control over the freeway...")
+    consoleMessage("Taking control of the freeway...")
 
     var text = $( "#morse_text" ).val()
 
@@ -26,7 +26,7 @@ function initMorse(){
         if (error) return console.warn(error);
         params.simul_data = JSON.parse(data.response);
         updateSimul();
-        consoleMessage("Your Jam is ready to be simulated, take a close look");
+        consoleMessage("Your jam is ready to be simulated, take a close look");
     });
 
 }
