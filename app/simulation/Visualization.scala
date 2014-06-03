@@ -16,6 +16,7 @@ case class Jam(scenario : String, xMin : Int, xMax : Int, tMin : Int, tMax : Int
 
 
 object Visualization {
+
   private val webSimPath = "../ramp-metering/.cache/WebSimulation/"
   private val scenariosPath = "../ramp-metering/data/networks/"
   private val nameMap = Map("finalI15" -> "finalI15", "I15" -> "I15", "small" -> "newsam", "half" -> "newhalf", "2 on/off" -> "new2o2o", "full control" -> "fullcontrol", "smallerfc" -> "smallerfc")
@@ -46,6 +47,14 @@ object Visualization {
     val criticalDensity = scen.fw.rhoCrits
     val maxDensity = scen.fw.rhoMaxs
     JsonConverter.visualSimToJson(VisualSim(density, criticalDensity, maxDensity))
+  }
+
+  private val morseScenario = Serializer.fromFile("../ramp-metering/data/networks/smallerfc.json")
+
+  def loadMorse(data: JsValue) = {
+    val control = new AdjointPolicyMaker(morseScenario, new TargetingConstructor(morseScenario, s, false)).givePolicy()
+    val sim = FreewaySimulator.simpleSim(morseScenario, control.flatRates)
+    JsonConverter.visualSimToJson(VisualSim(sim.density.map{_.toIndexedSeq}.toIndexedSeq, morseScenario.fw.rhoCrits, morseScenario.fw.rhoMaxs))
   }
 
   //Compute the control and load the simulation of the given jam
