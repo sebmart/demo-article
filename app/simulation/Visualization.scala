@@ -54,7 +54,8 @@ object Visualization {
       val scen : FreewayScenario = loadScenario(jam.scenario)
       Adjoint.optimizer = new FastChainedOptimizer
       val metering = new AdjointPolicyMaker(scen)
-      val balance = 1. -  ((jam.xMax - jam.xMin)*(jam.tMax - jam.tMin))/(scen.fw.nLinks * scen.simParams.numTimesteps)
+      val balance = 1. -  .5 * Math.sqrt((jam.xMax - jam.xMin)*(jam.tMax - jam.tMin)/(scen.fw.nLinks * scen.simParams.numTimesteps).toDouble)
+      println(balance)
       metering.globalObjective = CustomTTTObjective.box(jam.xMin,jam.xMax-1,jam.tMin,jam.tMax-1, balance ,true,false)
       val control = MeteringPolicy(metering.givePolicy().flatRates, scen)
       val density = (new BufferCtmSimulator(scen).simulate(control.flatRates)).density.map(_.toIndexedSeq).toIndexedSeq
