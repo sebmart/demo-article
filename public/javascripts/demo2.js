@@ -24,7 +24,9 @@ function initMorse(){
     .header("Content-Type", "application/json")
     .post(JSON.stringify({scenario: params.demo12_scenario, initials : text}), function(error, data) {
         if (error) return console.warn(error);
-        params.simul_data = JSON.parse(data.response);
+        var morseJson = JSON.parse(data.response);
+        params.simul_data = morseJson.visSim;
+        params.morseEvents = morseJson.events;
         updateSimul();
         consoleMessage("Your jam is ready to be simulated, take a close look");
     });
