@@ -12,7 +12,8 @@ import play.api.libs.functional.syntax._
  */
 
 case class VisualSim(density : IndexedSeq[IndexedSeq[Double]], criticalDensity : IndexedSeq[Double], maxDensity : IndexedSeq[Double])
-case class Jam(scenario : String, xMin : Int, xMax : Int, tMin : Int, tMax : Int);
+case class Jam(scenario : String, xMin : Int, xMax : Int, tMin : Int, tMax : Int)
+case class MorseParameters(scenario : String, initials: String)
 
 
 object Visualization {
@@ -49,12 +50,13 @@ object Visualization {
     JsonConverter.visualSimToJson(VisualSim(density, criticalDensity, maxDensity))
   }
 
-  private val morseScenario = Serializer.fromFile("../ramp-metering/data/networks/smallerfc.json")
-
   def loadMorse(data: JsValue) = {
-    val control = new AdjointPolicyMaker(morseScenario, new TargetingConstructor(morseScenario, s, false)).givePolicy()
-    val sim = FreewaySimulator.simpleSim(morseScenario, control.flatRates)
-    JsonConverter.visualSimToJson(VisualSim(sim.density.map{_.toIndexedSeq}.toIndexedSeq, morseScenario.fw.rhoCrits, morseScenario.fw.rhoMaxs))
+    val morseParams = JsonConverter.JsonToMorse(data)
+    val scen = loadScenario(morseParams.scenario)
+    val initials = morseParams.initials
+    val control = new AdjointPolicyMaker(scen, new TargetingConstructor(scen, initials, false)).givePolicy()
+    val sim = FreewaySimulator.simpleSim(scen, control.flatRates)
+    JsonConverter.visualSimToJson(VisualSim(sim.density.map{_.toIndexedSeq}.toIndexedSeq, scen.fw.rhoCrits, scen.fw.rhoMaxs))
   }
 
   //Compute the control and load the simulation of the given jam
@@ -87,6 +89,11 @@ object Visualization {
         (__ \ "tMax").read[Int]
       )(Jam)
 
+    implicit val morseReads = (
+      (__ \ "scenario").read[String] and
+        (__ \ "initials").read[String]
+      )(MorseParameters)
+
 
     def visualSimToJson(v : VisualSim) = {
       Json.toJson(v)
@@ -96,6 +103,14 @@ object Visualization {
       j.validate[Jam].map{
         case jam => jam
       }.recoverTotal{
+        e => throw new IllegalArgumentException
+      }
+    }
+
+    def JsonToMorse(j : JsValue) = {
+      j.validate[MorseParameters].map {
+        case p => p
+      }.recoverTotal {
         e => throw new IllegalArgumentException
       }
     }
