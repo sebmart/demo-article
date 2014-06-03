@@ -19,3 +19,22 @@ body {
     margin-top : 10px;
     margin-bottom : 10px;
 }
+
+#sim_console {
+    background-color:  black;
+    color: rgb(163, 211, 159);
+    font-weight:  bold;
+    padding:  20px;
+    border-radius: 20px;
+    border: 5px lightgrey;
+    border-style:  solid;
+}
+
+#sim_console ul {
+list-style-type: none;
+}
+
+#sim_console li:before {
+content: "+";
+    margin-right: 4px;
+}
