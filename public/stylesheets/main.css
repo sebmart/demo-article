@@ -28,6 +28,9 @@ body {
     margin-bottom : 10px;
 }
 
+#morse_bloc {
+    text-align : right;
+}
 #sim_console {
     background-color:  black;
     color: rgb(163, 211, 159);
@@ -46,3 +49,4 @@ list-style-type: none;
 content: "+";
     margin-right: 4px;
 }
+

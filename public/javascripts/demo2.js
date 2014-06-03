@@ -13,5 +13,20 @@ function initJamTools(){
 }
 
 function initMorse(){
+    consoleMessage("Analysing your initials...")
+    consoleMessage("Conversion to morse...")
+
+    consoleMessage("Taking control over the freeway...")
+
+    var text = $( "#morse_text" ).val()
+
+    d3.xhr("/morse")
+    .header("Content-Type", "application/json")
+    .post(JSON.stringify({scenario: params.demo12_scenario, initials : text}), function(error, data) {
+        if (error) return console.warn(error);
+        params.simul_data = JSON.parse(data.response);
+        updateSimul();
+        consoleMessage("Your Jam is ready to be simulated, take a close look");
+    });
 
 }
