@@ -3,7 +3,6 @@ package simulation
 import scala.io.Source
 import edu.berkeley.path.ramp_metering._
 import play.api.libs.json._
-import play.api.libs.functional.syntax._
 
 
 
@@ -14,6 +13,9 @@ import play.api.libs.functional.syntax._
 case class VisualSim(density : IndexedSeq[IndexedSeq[Double]], criticalDensity : IndexedSeq[Double], maxDensity : IndexedSeq[Double])
 case class Jam(scenario : String, xMin : Int, xMax : Int, tMin : Int, tMax : Int)
 case class MorseParameters(scenario : String, initials: String)
+case class MorseSymbol(isDash: Boolean, xCenter: Int)
+case class MorseEvent(t: Int, symbols: Seq[MorseSymbol])
+case class MorseVisualSim(visSim: VisualSim, events: Seq[MorseEvent])
 
 
 object Visualization {
@@ -54,9 +56,18 @@ object Visualization {
     val morseParams = JsonConverter.JsonToMorse(data)
     val scen = loadScenario(morseParams.scenario)
     val initials = morseParams.initials
-    val control = new AdjointPolicyMaker(scen, new TargetingConstructor(scen, initials, false)).givePolicy()
+    val targetConstructor = new TargetingConstructor(scen, initials, false)
+    val morseName = MorseCodeObjective.morseString(initials)
+    val morseBoxes = (morseName, morseName.map{_.size}).zipped.foldLeft((Seq[Seq[(SpaceTimeTarget, Boolean)]](), 0)){case ((fCol, fCount), (name, sliceSize)) => {
+      val nextPairs = targetConstructor.morse.boxes.slice(fCount, sliceSize + fCount).zip(name)
+      (fCol :+ nextPairs, fCount + sliceSize)
+    }}._1.map{ pack => {
+      val t = pack.head._1.tStart + pack.head._1.tDur / 2
+      MorseEvent(t, pack.map{case (box, isDash) => MorseSymbol(isDash, box.xStart + box.xDur / 2)})
+    }}
+    val control = new AdjointPolicyMaker(scen, targetConstructor).givePolicy()
     val sim = FreewaySimulator.simpleSim(scen, control.flatRates)
-    JsonConverter.visualSimToJson(VisualSim(sim.density.map{_.toIndexedSeq}.toIndexedSeq, scen.fw.rhoCrits, scen.fw.rhoMaxs))
+    JsonConverter.morseVisualSimToJson(MorseVisualSim(VisualSim(sim.density.map{_.toIndexedSeq}.toIndexedSeq, scen.fw.rhoCrits, scen.fw.rhoMaxs), morseBoxes))
   }
 
   //Compute the control and load the simulation of the given jam
@@ -75,28 +86,24 @@ object Visualization {
   }
 
   object JsonConverter{
-    implicit val visualSimWrites: Writes[VisualSim] = (
-      (JsPath \ "density").write[Seq[Seq[Double]]] and
-      (JsPath \ "criticalDensity").write[Seq[Double]] and
-      (JsPath \ "maxDensity").write[Seq[Double]]
-      )(unlift(VisualSim.unapply))
 
-    implicit val jamReads = (
-        (__ \ "scenario").read[String] and
-        (__ \ "xMin").read[Int] and
-        (__ \ "xMax").read[Int] and
-        (__ \ "tMin").read[Int] and
-        (__ \ "tMax").read[Int]
-      )(Jam)
+    implicit val jamReads = Json.reads[Jam]
+    implicit val morseReads = Json.reads[MorseParameters]
 
-    implicit val morseReads = (
-      (__ \ "scenario").read[String] and
-        (__ \ "initials").read[String]
-      )(MorseParameters)
+    implicit val visualSimWrites = Json.writes[VisualSim]
+    implicit val morseSymbolWrites = Json.writes[MorseSymbol]
+    implicit val morseEventWrites = Json.writes[MorseEvent]
+    implicit val morseVisualSimWrites = Json.writes[MorseVisualSim]
+
+
 
 
     def visualSimToJson(v : VisualSim) = {
       Json.toJson(v)
+    }
+
+    def morseVisualSimToJson(mV: MorseVisualSim) = {
+      Json.toJson(mV)
     }
 
     def JsonToJam(j : JsValue) = {
