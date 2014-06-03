@@ -12,14 +12,13 @@ function clearConsole() {
 /*Graph Bar
 ***************************/
 
-//To be filled via JSON
-var simul_data;
-
 //Global Parameters
-var graph_params = {
+var params = {
 //to be modified by hand
     height: 60,
     play_time: 30,
+    simul_name : "morse",
+    demo12_scenario : "smallerfc",
 
 //Automatically set up
     width: getSimulWidth(),
@@ -28,16 +27,15 @@ var graph_params = {
     simul_data : void 0,
     position_scale : void 0,
     space_length : void 0,
-    time_length : void 0,
+    time_length : void 0
 
 }
 
 //fetch and draw the data
 function initSimul(simulName){
-    var data; // a global
-    d3.json("simulation/" + simulName + ".json", function(error, json) {
+    d3.json("simulation/" + params.simul_name + ".json", function(error, json) {
       if (error) return console.warn(error);
-      graph_params.simul_data = json;
+      params.simul_data = json;
       drawSimul();
     });
 }
@@ -48,8 +46,8 @@ function getSimulWidth(){ return $("#simul").width()}
 
 //Return the color given the density (Don't accept negative densities !)
 function densityColors(dens,i){
-    critical_density = graph_params.simul_data.criticalDensity[i];
-    max_density = graph_params.simul_data.maxDensity[i];
+    critical_density = params.simul_data.criticalDensity[i];
+    max_density = params.simul_data.maxDensity[i];
     if(dens < critical_density)
         return "hsl(90,69%," +  40 *( 2 - dens/critical_density)+"%)";
     else
@@ -59,35 +57,35 @@ function densityColors(dens,i){
 //Draw a simulation
 function drawSimul(){
 
-    graph_params.space_length = graph_params.simul_data.density[0].length;
-    graph_params.time_length = graph_params.simul_data.density.length;
+    params.space_length = params.simul_data.density[0].length;
+    params.time_length = params.simul_data.density.length;
 
     //Init the slider
     $( "#time_slider" ).slider({ animate: "fast",
-                                 max: (graph_params.time_length - 1),
+                                 max: (params.time_length - 1),
                                  min: 0,
                                  slide: function( event, ui ) {updateSimul()}});
     //Init the play button
     $("#play_button").click(playSimul);
     //Drawing the svg
     var svg = d3.select("#simul").append("svg");
-    svg.attr("width", graph_params.width)
-       .attr("height", graph_params.height);
+    svg.attr("width", params.width)
+       .attr("height", params.height);
 
-    graph_params.position_scale = d3.scale.linear()
-                        .domain([0, graph_params.space_length])
-                        .range([0, graph_params.width]);
+    params.position_scale = d3.scale.linear()
+                        .domain([0, params.space_length])
+                        .range([0, params.width]);
 
     svg.selectAll("rect")
-       .data(graph_params.simul_data.density[0])
+       .data(params.simul_data.density[0])
        .enter()
        .append("rect")
        .attr("x", function(d,i){;
-            return Math.floor(graph_params.position_scale(i));
+            return Math.floor(params.position_scale(i));
        })
        .attr("y", 0)
-       .attr("width", graph_params.width/graph_params.space_length +1)
-       .attr("height", graph_params.height)
+       .attr("width", params.width/params.space_length +1)
+       .attr("height", params.height)
        .attr("fill", function(d,i) {
            return densityColors(d,i);
        });
@@ -99,6 +97,20 @@ function drawSimul(){
     	type: "simulation_loaded"
     });
 }
+//Close the simulation
+function eraseSim(){
+    params.simul_data = void 0;
+    params.play = false;
+    params.playSim = void 0;
+    params.simul_data = void 0;
+    params.position_scale = void 0;
+    params.space_length = void 0;
+    params.time_length = void 0;
+    $( "#window").unbind( "resize" );
+    $( "#simul").empty();
+    $("#play_button").unbind("click");
+    $( "#time_slider" ).slider( "destroy" );
+}
 
 //Called when the slider is moving
 function updateSimul(){
@@ -106,7 +118,7 @@ function updateSimul(){
 
     d3.select("#simul svg")
       .selectAll("rect")
-       .data(graph_params.simul_data.density[time])
+       .data(params.simul_data.density[time])
        .transition()
        .attr("fill", function(d,i) {
            return densityColors(d,i);
@@ -116,32 +128,32 @@ function updateSimul(){
 
 //Called when the size of the window is changing
 function resizeSimul(){
-    graph_params.width = getSimulWidth();
+    params.width = getSimulWidth();
 
-    graph_params.position_scale = d3.scale.linear()
-                            .domain([0, graph_params.space_length])
-                            .range([0, graph_params.width]);
+    params.position_scale = d3.scale.linear()
+                            .domain([0, params.space_length])
+                            .range([0, params.width]);
 
     var svg = d3.select("#simul svg");
-    svg.attr("width", graph_params.width);
+    svg.attr("width", params.width);
 
     svg.selectAll("rect")
-       .data(graph_params.simul_data.density[$( "#time_slider" ).slider( "value" )])
+       .data(params.simul_data.density[$( "#time_slider" ).slider( "value" )])
        .attr("x", function(d,i){;
-            return Math.floor(graph_params.position_scale(i));
+            return Math.floor(params.position_scale(i));
        })
-       .attr("width", graph_params.width/graph_params.space_length+1)
+       .attr("width", params.width/params.space_length+1)
 ;
 }
 
 //Handle the Simulation play
 
 function stopSim() {
-    clearInterval(graph_params.playSim);
-    graph_params.play = false;
+    clearInterval(params.playSim);
+    params.play = false;
 }
 function playUpdate(){
-    if($( "#time_slider" ).slider( "value" ) == (graph_params.time_length - 1))
+    if($( "#time_slider" ).slider( "value" ) == (params.time_length - 1))
         stopSim();
     else{
         $( "#time_slider" ).slider( "value", ($( "#time_slider" ).slider( "value") + 1) );
@@ -150,12 +162,12 @@ function playUpdate(){
 }
 //called when play button is clicked
 function playSimul(){
-    if(graph_params.play)
+    if(params.play)
         stopSim()
     else {
-        var time_interval = graph_params.play_time * 1000 / graph_params.time_length;
-        graph_params.playSim = setInterval(playUpdate, time_interval);
-        graph_params.play = true;
+        var time_interval = params.play_time * 1000 / params.time_length;
+        params.playSim = setInterval(playUpdate, time_interval);
+        params.play = true;
     }
 }
 

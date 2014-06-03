@@ -30,4 +30,8 @@ object Application extends Controller {
     Ok(simulation.Visualization.loadExistingSim(simulName))
   }
 
+  def getJam = Action(parse.json) { request =>
+    Ok(simulation.Visualization.loadJam(request.body))
+    }
+
 }

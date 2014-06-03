@@ -15,7 +15,15 @@ body {
     text-align : right;
 }
 
+#space_handler {
+    text-align : right;
+}
+
 #time_slider {
     margin-top : 10px;
+    margin-bottom : 10px;
+}
+
+#jam_space_slider {
     margin-bottom : 10px;
 }

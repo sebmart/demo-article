@@ -12,11 +12,13 @@ import play.api.libs.functional.syntax._
  */
 
 case class VisualSim(density : IndexedSeq[IndexedSeq[Double]], criticalDensity : IndexedSeq[Double], maxDensity : IndexedSeq[Double])
+case class Jam(scenario : String, xMin : Int, xMax : Int, tMin : Int, tMax : Int);
+
 
 object Visualization {
   private val webSimPath = "../ramp-metering/.cache/WebSimulation/"
   private val scenariosPath = "../ramp-metering/data/networks/"
-  private val nameMap = Map("lastout" -> "lastout", "I15" -> "I15", "small" -> "newsam", "half" -> "newhalf", "2 on/off" -> "new2o2o", "spreaded 2 on/off" -> "spreadout2o2o", "full control" -> "fullcontrol") //"i15" -> "newi15"
+  private val nameMap = Map("finalI15" -> "finalI15", "I15" -> "I15", "small" -> "newsam", "half" -> "newhalf", "2 on/off" -> "new2o2o", "full control" -> "fullcontrol", "smallerfc" -> "smallerfc")
 
   //load a scenario from the ramp-metering database
   private def loadScenario(scenName : String) : FreewayScenario ={
@@ -46,6 +48,19 @@ object Visualization {
     JsonConverter.visualSimToJson(VisualSim(density, criticalDensity, maxDensity))
   }
 
+  //Compute the control and load the simulation of the given jam
+  def loadJam(data : JsValue) : JsValue = {
+      val jam = JsonConverter.JsonToJam(data)
+      val scen : FreewayScenario = loadScenario(jam.scenario)
+      Adjoint.optimizer = new FastChainedOptimizer
+      val metering = new AdjointPolicyMaker(scen)
+      metering.globalObjective = CustomTTTObjective.box(jam.xMin,jam.xMax-1,jam.tMin,jam.tMax-1,.7,true,false)
+      val control = MeteringPolicy(metering.givePolicy().flatRates, scen)
+      val density = (new BufferCtmSimulator(scen).simulate(control.flatRates)).density.map(_.toIndexedSeq).toIndexedSeq
+
+      JsonConverter.visualSimToJson(VisualSim(density, scen.fw.rhoCrits, scen.fw.rhoMaxs))
+  }
+
   object JsonConverter{
     implicit val visualSimWrites: Writes[VisualSim] = (
       (JsPath \ "density").write[Seq[Seq[Double]]] and
@@ -53,8 +68,25 @@ object Visualization {
       (JsPath \ "maxDensity").write[Seq[Double]]
       )(unlift(VisualSim.unapply))
 
+    implicit val jamReads = (
+        (__ \ "scenario").read[String] and
+        (__ \ "xMin").read[Int] and
+        (__ \ "xMax").read[Int] and
+        (__ \ "tMin").read[Int] and
+        (__ \ "tMax").read[Int]
+      )(Jam)
+
+
     def visualSimToJson(v : VisualSim) = {
       Json.toJson(v)
+    }
+
+    def JsonToJam(j : JsValue) = {
+      j.validate[Jam].map{
+        case jam => jam
+      }.recoverTotal{
+        e => throw new IllegalArgumentException
+      }
     }
   }
 }

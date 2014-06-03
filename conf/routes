@@ -13,6 +13,7 @@ GET     /demo3                      controllers.Application.demo3
 
 #JSON
 GET     /simulation/*file           controllers.Application.getSimulation(file)
+POST    /jam                        controllers.Application.getJam
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
