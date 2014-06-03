@@ -6,7 +6,7 @@ $(document).ready(function(){
     initSimul(params.simul_name);
 })
 //Draw a simulation
-function initJamTools(){
+function initMorseTools(){
 
     //Init the jam button
     $("#morse_button").click(initMorse);
