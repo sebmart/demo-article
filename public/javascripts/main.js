@@ -2,7 +2,7 @@
  ********************/
 //Write a new message in the console
 function consoleMessage(message) {
-    $("#sim_console ul").append($("<li>").text(message));
+    $("#sim_console ul").prepend($("<li>").text(message));
 }
 
 function clearConsole() {
