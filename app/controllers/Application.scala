@@ -19,7 +19,9 @@ object Application extends Controller {
     Ok(views.html.demo1())
   }
 
-  def demo2 = TODO
+  def demo2 = Action {
+    Ok(views.html.demo2())
+  }
 
   def demo3 = TODO
 
@@ -28,6 +30,12 @@ object Application extends Controller {
   *********************/
   def getSimulation(simulName : String) = Action {
     Ok(simulation.Visualization.loadExistingSim(simulName))
+  }
+
+  def morse = Action(parse.json) { request =>
+    Ok(
+    simulation.Visualization.loadMorse(request.body)
+    )
   }
 
   def getJam = Action(parse.json) { request =>
