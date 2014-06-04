@@ -22,6 +22,7 @@ var params = {
     paint_simul_name : "test2",
     morse_delay : 3000,
     morse_height_ratio : .3,
+    paint_ratio : 1.,
 
 //Automatically set up
     width: getSimulWidth(),
@@ -30,6 +31,7 @@ var params = {
     playSim : void 0,
     simul_data : void 0,
     position_scale : void 0,
+    vertical_scale : void 0,
     space_length : void 0,
     time_length : void 0,
     morse_time : void 0,
@@ -139,8 +141,7 @@ function resizeSimul(){
        .attr("x", function(d,i){;
             return Math.floor(params.position_scale(i));
        })
-       .attr("width", params.width/params.space_length+1)
-;
+       .attr("width", params.width/params.space_length+1);
 }
 
 //Handle the Simulation play
