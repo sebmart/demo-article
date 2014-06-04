@@ -20,7 +20,7 @@ function initMorse(){
 
     consoleMessage("Taking control of the freeway...")
 
-    var text = $( "#morse_text" ).val()
+    var text = $( "#morse_text" ).val().toUpperCase();
 
     d3.xhr("/morse")
     .header("Content-Type", "application/json")
@@ -99,6 +99,6 @@ function unshowMorse(){
 }
 
 function getMorseSimulWidth(){
-    return getSimulWidth() - 110;
+    return getSimulWidth() - 140;
 
 }
