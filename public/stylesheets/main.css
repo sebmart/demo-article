@@ -47,16 +47,28 @@ list-style-type: none;
 }
 
 #sim_console li:before {
-content: "+";
+content: "pirate@hackysack.hack>>";
     margin-right: 4px;
 }
 #simul.morse{
 }
 #morse_message{
-    width : 100px;
+    width : 130px;
     font-size:300%;
 }
 
 #simul_container{
     width:100%;
+}
+
+#morse_text {
+  text-transform: uppercase;
+}
+
+#temp_message {
+border-radius: 20px;
+background-color: rgb(223, 223, 223);
+border: #302C5B solid;
+padding-left: 5px;
+padding-right: 5px;
 }
