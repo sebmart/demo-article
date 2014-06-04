@@ -29,13 +29,17 @@ function initJamTools(){
 
 //Load a box jam created with the parameters of the User
 function initJam(){
+$("#jam_button,#play_button").attr("disabled", "disabled");
+NProgress.start();
     consoleMessage("....Please wait, we are taking control of the traffic lights to create your jam");
     var xval = $( "#jam_space_slider" ).slider("values");
     var tval = $( "#jam_time_slider" ).slider("values");
     d3.xhr("/jam")
     .header("Content-Type", "application/json")
     .post(JSON.stringify({scenario: params.demo12_scenario, xMin: xval[0], xMax : xval[1], tMin: tval[0], tMax : tval[1]}), function(error, data) {
+    NProgress.done();
         if (error) return console.warn(error);
+        $("#jam_button,#play_button").removeAttr("disabled");
         params.simul_data = JSON.parse(data.response);
         updateSimul();
         consoleMessage("Your Jam is ready to be simulated");
