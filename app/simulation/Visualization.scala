@@ -13,8 +13,8 @@ import play.api.libs.json._
 case class VisualSim(density : IndexedSeq[IndexedSeq[Double]], criticalDensity : IndexedSeq[Double], maxDensity : IndexedSeq[Double])
 case class Jam(scenario : String, xMin : Int, xMax : Int, tMin : Int, tMax : Int)
 case class MorseParameters(scenario : String, initials: String)
-case class MorseSymbol(isDash: Boolean, xCenter: Int)
-case class MorseEvent(t: Int, symbols: Seq[MorseSymbol])
+case class MorseSymbol(isDash: Boolean, xCenter: Int, xWidth : Int)
+case class MorseEvent(t: Int, symbols: Seq[MorseSymbol], letter : String)
 case class MorseVisualSim(visSim: VisualSim, events: Seq[MorseEvent])
 
 
@@ -61,10 +61,11 @@ object Visualization {
     val morseBoxes = (morseName, morseName.map{_.size}).zipped.foldLeft((Seq[Seq[(SpaceTimeTarget, Boolean)]](), 0)){case ((fCol, fCount), (name, sliceSize)) => {
       val nextPairs = targetConstructor.morse.boxes.slice(fCount, sliceSize + fCount).zip(name)
       (fCol :+ nextPairs, fCount + sliceSize)
-    }}._1.map{ pack => {
-      val t = pack.head._1.tStart + pack.head._1.tDur / 2
-      MorseEvent(t, pack.map{case (box, isDash) => MorseSymbol(isDash, box.xStart + box.xDur / 2)})
+    }}._1.zip(initials.toList).map{ case (pack ,letter) => {
+      val t = pack.head._1.tStart + (pack.head._1.tDur * (2. / 3.)).toInt
+      MorseEvent(t, pack.map{case (box, isDash) => MorseSymbol(isDash, box.xStart + box.xDur / 2, box.xDur)}, letter.toString)
     }}
+
     val control = new AdjointPolicyMaker(scen, targetConstructor).givePolicy()
     val sim = FreewaySimulator.simpleSim(scen, control.flatRates)
     JsonConverter.morseVisualSimToJson(MorseVisualSim(VisualSim(sim.density.map{_.toIndexedSeq}.toIndexedSeq, scen.fw.rhoCrits, scen.fw.rhoMaxs), morseBoxes))

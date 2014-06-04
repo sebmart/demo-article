@@ -30,6 +30,7 @@ body {
 
 #morse_bloc {
     text-align : right;
+    margin-right : 120px;
 }
 #sim_console {
     background-color:  black;
@@ -49,4 +50,13 @@ list-style-type: none;
 content: "+";
     margin-right: 4px;
 }
+#simul.morse{
+}
+#morse_message{
+    width : 100px;
+    font-size:300%;
+}
 
+#simul_container{
+    width:100%;
+}
