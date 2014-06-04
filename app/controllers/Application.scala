@@ -23,7 +23,9 @@ object Application extends Controller {
     Ok(views.html.demo2())
   }
 
-  def demo3 = TODO
+  def demo3 = Action {
+    Ok(views.html.demo3())
+  }
 
 
   /* JSON

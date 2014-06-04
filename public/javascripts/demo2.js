@@ -28,8 +28,8 @@ NProgress.start();
     .header("Content-Type", "application/json")
     .post(JSON.stringify({scenario: params.demo12_scenario, initials : text}), function(error, data) {
         if (error) return console.warn(error);
-        $("#morse_button,#play_button").removeAttr("disabled")
-            NProgress.done();
+        $("#morse_button,#play_button").removeAttr("disabled");
+NProgress.done();
         var morseJson = JSON.parse(data.response);
         params.simul_data = morseJson.visSim;
         params.morse_time = $.map(morseJson.events, function(val){return val.t});

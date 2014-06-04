@@ -19,6 +19,7 @@ var params = {
     play_time: 12,
     simul_name : "morse",
     demo12_scenario : "smallerfc",
+    paint_simul_name : "test2",
     morse_delay : 3000,
     morse_height_ratio : .3,
 
@@ -35,6 +36,8 @@ var params = {
     morse : void 0,
     morse_info : false,
     update_function : playUpdate,
+    update_simul : updateSimul,
+    resize_simul : resizeSimul,
     width_function : getSimulWidth
 
 }
@@ -98,30 +101,13 @@ function drawSimul(){
        .attr("fill", function(d,i) {
            return densityColors(d,i);
        });
-    $( window ).resize(windowResized);
+    $( window ).resize(params.resize_simul);
     consoleMessage("Simulation loaded");
     $.event.trigger({
     	type: "simulation_loaded"
     });
 }
 
-function windowResized(){
-    resizeSimul(params.width_function());
-}
-//Close the simulation
-function eraseSim(){
-    params.simul_data = void 0;
-    params.play = false;
-    params.playSim = void 0;
-    params.simul_data = void 0;
-    params.position_scale = void 0;
-    params.space_length = void 0;
-    params.time_length = void 0;
-    $( "#window").unbind( "resize" );
-    $( "#simul").empty();
-    $("#play_button").unbind("click");
-    $( "#time_slider" ).slider( "destroy" );
-}
 
 //Called when the slider is moving
 function updateSimul(){
@@ -138,8 +124,8 @@ function updateSimul(){
 }
 
 //Called when the size of the window is changing
-function resizeSimul(w){
-    params.width = w;
+function resizeSimul(){
+    params.width = params.width_function();
 
     params.position_scale = d3.scale.linear()
                             .domain([0, params.space_length])
@@ -170,7 +156,7 @@ function playUpdate(){
         stopSim();
     else{
         $( "#time_slider" ).slider( "value", ($( "#time_slider" ).slider( "value") + 1) );
-        updateSimul();
+        params.update_simul();
     }
 }
 //called when play button is clicked
