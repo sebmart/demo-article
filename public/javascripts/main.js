@@ -19,15 +19,23 @@ var params = {
     play_time: 12,
     simul_name : "morse",
     demo12_scenario : "smallerfc",
+    morse_delay : 3000,
+    morse_height_ratio : .3,
 
 //Automatically set up
     width: getSimulWidth(),
     play : false,
+    morse_pause : false,
     playSim : void 0,
     simul_data : void 0,
     position_scale : void 0,
     space_length : void 0,
-    time_length : void 0
+    time_length : void 0,
+    morse_time : void 0,
+    morse : void 0,
+    morse_info : false,
+    update_function : playUpdate,
+    width_function : getSimulWidth
 
 }
 
@@ -42,7 +50,7 @@ function initSimul(simulName){
 
 
 //return the width of the simulation (depend on the window size)
-function getSimulWidth(){ return $("#simul").width()}
+function getSimulWidth(){ return $("#simul_container").width()}
 
 //Return the color given the density (Don't accept negative densities !)
 function densityColors(dens,i){
@@ -59,6 +67,7 @@ function drawSimul(){
 
     params.space_length = params.simul_data.density[0].length;
     params.time_length = params.simul_data.density.length;
+    params.width = params.width_function();
 
     //Init the slider
     $( "#time_slider" ).slider({ animate: "fast",
@@ -89,13 +98,15 @@ function drawSimul(){
        .attr("fill", function(d,i) {
            return densityColors(d,i);
        });
-        $( window ).resize(function() {
-            resizeSimul();
-        });
+    $( window ).resize(windowResized);
     consoleMessage("Simulation loaded");
     $.event.trigger({
     	type: "simulation_loaded"
     });
+}
+
+function windowResized(){
+    resizeSimul(params.width_function());
 }
 //Close the simulation
 function eraseSim(){
@@ -127,8 +138,8 @@ function updateSimul(){
 }
 
 //Called when the size of the window is changing
-function resizeSimul(){
-    params.width = getSimulWidth();
+function resizeSimul(w){
+    params.width = w;
 
     params.position_scale = d3.scale.linear()
                             .domain([0, params.space_length])
@@ -151,7 +162,9 @@ function resizeSimul(){
 function stopSim() {
     clearInterval(params.playSim);
     params.play = false;
+    params.morse_pause = false;
 }
+
 function playUpdate(){
     if($( "#time_slider" ).slider( "value" ) == (params.time_length - 1))
         stopSim();
@@ -163,10 +176,10 @@ function playUpdate(){
 //called when play button is clicked
 function playSimul(){
     if(params.play)
-        stopSim()
+        stopSim();
     else {
         var time_interval = params.play_time * 1000 / params.time_length;
-        params.playSim = setInterval(playUpdate, time_interval);
+        params.playSim = setInterval(params.update_function, time_interval);
         params.play = true;
     }
 }
