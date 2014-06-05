@@ -5,7 +5,9 @@ $(document).ready(function(){
     params.simul_name = params.paint_simul_name;
     params.update_simul = paintUpdateSimul;
     params.resize_simul = paintResizeSimul;
-    initSimul();
+    params.control_height = 24;
+    params.control_width = 8;
+    initSimul(params.paint_simul_name);
 });
 
 function initSpaceTime(){

@@ -22,7 +22,7 @@ object Visualization {
 
   private val webSimPath = "../ramp-metering/.cache/WebSimulation/"
   private val scenariosPath = "../ramp-metering/data/networks/"
-  private val nameMap = Map("finalI15" -> "finalI15", "I15" -> "I15", "small" -> "newsam", "half" -> "newhalf", "2 on/off" -> "new2o2o", "full control" -> "fullcontrol", "smallerfc" -> "smallerfc")
+  private val nameMap = Map("finalI15" -> "finalI15", "I15" -> "I15", "small" -> "newsam", "half" -> "newhalf", "2 on/off" -> "new2o2o", "full control" -> "fullcontrol", "smallerfc" -> "smallerfc", "a" -> "a",  "morse" -> "morse",  "box-jam" -> "box-jam")
 
   //load a scenario from the ramp-metering database
   private def loadScenario(scenName : String) : FreewayScenario ={

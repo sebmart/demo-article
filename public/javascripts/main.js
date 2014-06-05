@@ -17,19 +17,27 @@ var params = {
 //to be modified by hand
    //all simulations
     height: 60,
-    play_time: 12,
-    simul_name : "morse",
-    demo12_scenario : "smallerfc",
+    play_time: 9,
+    simul_name_demo1 : "box-jam",
+
+
    //control
     control_height : 60,
     control_width : 20,
     control_offset_ratio : .9,
+   //demo1
+    demo1_scenario : "box-jam",
    //demo2
-    morse_delay : 3000,
+    morse_delay : 2500,
     morse_height_ratio : .3,
+    simul_name_demo2 : "morse",
+    demo2_scenario : "morse",
+
    //demo3
     paint_ratio : 16./9.,
     paint_simul_name : "test2",
+
+
 
 //Automatically set up
     width: getSimulWidth(),
@@ -52,8 +60,8 @@ var params = {
 }
 
 //fetch and draw the data
-function initSimul(){
-    d3.json("simulation/" + params.simul_name + ".json", function(error, json) {
+function initSimul(simulName){
+    d3.json("simulation/" + simulName + ".json", function(error, json) {
       if (error) return console.warn(error);
       params.simul_data = json;
       drawSimul();
@@ -169,8 +177,12 @@ function stopSim() {
     params.morse_pause = false;
 }
 
+function isEndOfSim() {
+return ($( "#time_slider" ).slider( "value" ) == (params.time_length - 1));
+}
+
 function playUpdate(){
-    if($( "#time_slider" ).slider( "value" ) == (params.time_length - 1))
+    if (isEndOfSim())
         stopSim();
     else{
         $( "#time_slider" ).slider( "value", ($( "#time_slider" ).slider( "value") + 1) );
@@ -182,10 +194,18 @@ function playSimul(){
     if(params.play)
         stopSim();
     else {
+        if (isEndOfSim()) {
+          resetSim();
+        }
         var time_interval = params.play_time * 1000 / params.time_length;
         params.playSim = setInterval(params.update_function, time_interval);
         params.play = true;
     }
+}
+function sleep(millis, callback) {
+    setTimeout(function()
+            { callback(); }
+    , millis);
 }
 
 //Initialize the control visualization
@@ -246,4 +266,13 @@ function updateControl(time){
     signal.select(".red").attr("fill", function(d){return controlRedColor(d);});
     signal.select(".orange").attr("fill", function(d){return controlOrangeColor(d);});
     signal.select(".green").attr("fill", function(d){return controlGreenColor(d);});
-}
+}function resetSim() {
+$("#time_slider").slider("value", 0);
+sleep(500, function() {
+$("#play_button").click();
+        if (!params.play) {
+        $("#play_button").click();
+        }
+});
+        }
+

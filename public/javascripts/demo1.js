@@ -3,7 +3,7 @@
 //To be executed when the page is loaded, first simulation
 $(document).ready(function(){
     $(document).on("simulation_loaded", initJamTools);
-    initSimul();
+    initSimul(params.simul_name_demo1);
 })
 
 
@@ -36,10 +36,11 @@ NProgress.start();
     var tval = $( "#jam_time_slider" ).slider("values");
     d3.xhr("/jam")
     .header("Content-Type", "application/json")
-    .post(JSON.stringify({scenario: params.demo12_scenario, xMin: xval[0], xMax : xval[1], tMin: tval[0], tMax : tval[1]}), function(error, data) {
+    .post(JSON.stringify({scenario: params.demo1_scenario, xMin: xval[0], xMax : xval[1], tMin: tval[0], tMax : tval[1]}), function(error, data) {
     NProgress.done();
         if (error) return console.warn(error);
         $("#jam_button,#play_button").removeAttr("disabled");
+        resetSim();
         params.simul_data = JSON.parse(data.response);
         updateSimul();
         consoleMessage("Your Jam is ready to be simulated");
