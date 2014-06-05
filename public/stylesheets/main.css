@@ -55,6 +55,9 @@ content: "pirate@hackysack.hack>>";
     width : 130px;
     font-size:300%;
 }
+#above_morse_message{
+    width : 130px;
+}
 
 #simul_container{
     width:100%;
