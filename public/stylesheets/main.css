@@ -50,8 +50,7 @@ list-style-type: none;
 content: "pirate@hackysack.hack>>";
     margin-right: 4px;
 }
-#simul.morse{
-}
+
 #morse_message{
     width : 130px;
     font-size:300%;
@@ -75,4 +74,7 @@ padding-right: 5px;
 
 #console-log-header {
 font-family: monospace;
+}
+#simul {
+    height : 60px;
 }

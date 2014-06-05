@@ -10,7 +10,7 @@ import play.api.libs.json._
  * Created by Sebastien on 01/06/14.
  */
 
-case class VisualSim(density : IndexedSeq[IndexedSeq[Double]], criticalDensity : IndexedSeq[Double], maxDensity : IndexedSeq[Double])
+case class VisualSim(density : IndexedSeq[IndexedSeq[Double]], control : IndexedSeq[IndexedSeq[Double]], onRamps : IndexedSeq[Int], criticalDensity : IndexedSeq[Double], maxDensity : IndexedSeq[Double])
 case class Jam(scenario : String, xMin : Int, xMax : Int, tMin : Int, tMax : Int)
 case class MorseParameters(scenario : String, initials: String)
 case class MorseSymbol(isDash: Boolean, xCenter: Int, xWidth : Int)
@@ -35,8 +35,7 @@ object Visualization {
     val simParams = sc.next().split(":").map(x => {val l = x.split(","); (l(0),l(1))}).toMap
     val scen : FreewayScenario = loadScenario(simParams("network"))
 
-    val simControl = MeteringPolicy(sc.next().split(":").map(_.split(",").map(_.toDouble)).flatten,scen)
-
+    val simControl = MeteringPolicy(sc.next().split(":").map(_.split(",").map(_.toDouble)).flatten,scen).unlinearized.map(_.toIndexedSeq).toIndexedSeq
     val density = sc.next().split(":").map(_.split(",").map(x =>x.toDouble).toIndexedSeq).toIndexedSeq
    /* val queue = sc.next().split(":").map(_.split(",").map(x =>x.toDouble))
     val fluxIn = sc.next().split(":").map(_.split(",").map(x =>x.toDouble))
@@ -49,7 +48,7 @@ object Visualization {
 
     val criticalDensity = scen.fw.rhoCrits
     val maxDensity = scen.fw.rhoMaxs
-    JsonConverter.visualSimToJson(VisualSim(density, criticalDensity, maxDensity))
+    JsonConverter.visualSimToJson(VisualSim(density, simControl, scen.fw.onramps.tail ,criticalDensity, maxDensity))
   }
 
   def loadMorse(data: JsValue) = {
@@ -68,7 +67,7 @@ object Visualization {
 
     val control = new AdjointPolicyMaker(scen, targetConstructor).givePolicy()
     val sim = FreewaySimulator.simpleSim(scen, control.flatRates)
-    JsonConverter.morseVisualSimToJson(MorseVisualSim(VisualSim(sim.density.map{_.toIndexedSeq}.toIndexedSeq, scen.fw.rhoCrits, scen.fw.rhoMaxs), morseBoxes))
+    JsonConverter.morseVisualSimToJson(MorseVisualSim(VisualSim(sim.density.map{_.toIndexedSeq}.toIndexedSeq, control.unlinearized.map(_.toIndexedSeq).toIndexedSeq , scen.fw.onramps.tail, scen.fw.rhoCrits, scen.fw.rhoMaxs), morseBoxes))
   }
 
   //Compute the control and load the simulation of the given jam
@@ -83,7 +82,7 @@ object Visualization {
       val control = MeteringPolicy(metering.givePolicy().flatRates, scen)
       val density = (new BufferCtmSimulator(scen).simulate(control.flatRates)).density.map(_.toIndexedSeq).toIndexedSeq
 
-      JsonConverter.visualSimToJson(VisualSim(density, scen.fw.rhoCrits, scen.fw.rhoMaxs))
+      JsonConverter.visualSimToJson(VisualSim(density, control.unlinearized.map(_.toIndexedSeq).toIndexedSeq, scen.fw.onramps.tail, scen.fw.rhoCrits, scen.fw.rhoMaxs))
   }
 
   object JsonConverter{
