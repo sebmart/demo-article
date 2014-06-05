@@ -50,7 +50,19 @@ function initSpaceTime(){
        .attr("fill", function(d,i) {
            return densityColors(d,i);
        });
+        if($("#revealBox").checked) {
+           d3.select("#spacetime").style("display", "block");
+       }
+       else
+           d3.select("#spacetime").style("display", "none");
 
+        $("#revealBox").change(function() {
+            if(this.checked) {
+                d3.select("#spacetime").style("display", "block");
+            }
+            else
+                d3.select("#spacetime").style("display", "none");
+        });
     consoleMessage("Space and time loaded");
 }
 

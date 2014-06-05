@@ -21,8 +21,8 @@ var params = {
     demo12_scenario : "smallerfc",
     paint_simul_name : "test2",
     morse_delay : 3000,
+    paint_ratio : 16./9.,
     morse_height_ratio : .3,
-    paint_ratio : 1.,
 
 //Automatically set up
     width: getSimulWidth(),
@@ -78,7 +78,7 @@ function drawSimul(){
     $( "#time_slider" ).slider({ animate: "fast",
                                  max: (params.time_length - 1),
                                  min: 0,
-                                 slide: function( event, ui ) {updateSimul()}});
+                                 slide: function( event, ui ) {params.update_simul()}});
     //Init the play button
     $("#play_button").click(playSimul);
     //Drawing the svg
@@ -118,7 +118,6 @@ function updateSimul(){
     d3.select("#simul svg")
       .selectAll("rect")
        .data(params.simul_data.density[time])
-       .transition()
        .attr("fill", function(d,i) {
            return densityColors(d,i);
        });
