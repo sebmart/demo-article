@@ -4,7 +4,7 @@
 $(document).ready(function(){
     $(document).on("simulation_loaded", initMorseTools);
     params.width_function = getMorseSimulWidth;
-    initSimul(params.simul_name);
+    initSimul(params.simul_name_demo2);
 
 });
 //Draw a simulation
@@ -30,6 +30,7 @@ NProgress.start();
         if (error) return console.warn(error);
         $("#morse_button,#play_button").removeAttr("disabled")
             NProgress.done();
+            resetSim();
         var morseJson = JSON.parse(data.response);
         params.simul_data = morseJson.visSim;
         params.morse_time = $.map(morseJson.events, function(val){return val.t});
@@ -92,12 +93,12 @@ function showMorse(i){
            .attr("fill", "black")
            .style("opacity",0);
 
-    d3.selectAll("#simul svg rect.morse, #temp_message").transition().duration(1000).style('opacity', 1);
+    d3.selectAll("#simul svg rect.morse, #temp_message").transition().duration(params.morse_delay / 3.0).style('opacity', 1);
 
 }
 
 function unshowMorse(){
-    d3.selectAll("#simul svg rect.morse, #temp_message").transition().duration(1000).style('opacity', 0).remove();
+    d3.selectAll("#simul svg rect.morse, #temp_message").transition().duration(params.morse_delay / 3.0).style('opacity', 0).remove();
     params.morse_info = false;
 
 }

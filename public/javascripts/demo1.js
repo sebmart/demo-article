@@ -3,7 +3,7 @@
 //To be executed when the page is loaded, first simulation
 $(document).ready(function(){
     $(document).on("simulation_loaded", initJamTools);
-    initSimul(params.simul_name);
+    initSimul(params.simul_name_demo1);
 })
 
 
@@ -40,6 +40,7 @@ NProgress.start();
     NProgress.done();
         if (error) return console.warn(error);
         $("#jam_button,#play_button").removeAttr("disabled");
+        resetSim();
         params.simul_data = JSON.parse(data.response);
         updateSimul();
         consoleMessage("Your Jam is ready to be simulated");

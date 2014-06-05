@@ -16,10 +16,12 @@ function clearConsole() {
 var params = {
 //to be modified by hand
     height: 60,
-    play_time: 12,
-    simul_name : "morse",
-    demo12_scenario : "smallerfc",
-    morse_delay : 3000,
+    play_time: 8,
+    simul_name_demo1 : "box-jam",
+    simul_name_demo2 : "morse",
+    demo12_scenario : "box-jam",
+    demo12_scenario : "morse",
+    morse_delay : 2000,
     morse_height_ratio : .3,
 
 //Automatically set up
@@ -41,7 +43,7 @@ var params = {
 
 //fetch and draw the data
 function initSimul(simulName){
-    d3.json("simulation/" + params.simul_name + ".json", function(error, json) {
+    d3.json("simulation/" + simulName + ".json", function(error, json) {
       if (error) return console.warn(error);
       params.simul_data = json;
       drawSimul();
@@ -165,8 +167,12 @@ function stopSim() {
     params.morse_pause = false;
 }
 
+function isEndOfSim() {
+return ($( "#time_slider" ).slider( "value" ) == (params.time_length - 1));
+}
+
 function playUpdate(){
-    if($( "#time_slider" ).slider( "value" ) == (params.time_length - 1))
+    if (isEndOfSim())
         stopSim();
     else{
         $( "#time_slider" ).slider( "value", ($( "#time_slider" ).slider( "value") + 1) );
@@ -178,9 +184,27 @@ function playSimul(){
     if(params.play)
         stopSim();
     else {
+        if (isEndOfSim()) {
+          resetSim();
+        }
         var time_interval = params.play_time * 1000 / params.time_length;
         params.playSim = setInterval(params.update_function, time_interval);
         params.play = true;
     }
 }
+function sleep(millis, callback) {
+    setTimeout(function()
+            { callback(); }
+    , millis);
+}
+
+function resetSim() {
+$("#time_slider").slider("value", 0);
+sleep(500, function() {
+$("#play_button").click();
+        if (!params.play) {
+        $("#play_button").click();
+        }
+});
+        }
 
