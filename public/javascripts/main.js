@@ -15,14 +15,21 @@ function clearConsole() {
 //Global Parameters
 var params = {
 //to be modified by hand
+   //all simulations
     height: 60,
     play_time: 12,
     simul_name : "morse",
     demo12_scenario : "smallerfc",
-    paint_simul_name : "test2",
+   //control
+    control_height : 60,
+    control_width : 20,
+    control_offset_ratio : .9,
+   //demo2
     morse_delay : 3000,
-    paint_ratio : 16./9.,
     morse_height_ratio : .3,
+   //demo3
+    paint_ratio : 16./9.,
+    paint_simul_name : "test2",
 
 //Automatically set up
     width: getSimulWidth(),
@@ -45,7 +52,7 @@ var params = {
 }
 
 //fetch and draw the data
-function initSimul(simulName){
+function initSimul(){
     d3.json("simulation/" + params.simul_name + ".json", function(error, json) {
       if (error) return console.warn(error);
       params.simul_data = json;
@@ -67,28 +74,25 @@ function densityColors(dens,i){
         return "hsl(" + 90 * (max_density - dens)/(max_density - critical_density) + ",69%," + (50  - 10 * (dens - critical_density)/(max_density - critical_density)) + "%)"
 }
 
+function controlRedColor(control){if (control < 1.0/6.0) return "hsl(0,100%,42%)"; else return "hsl(0,40%,15%)"; }
+function controlOrangeColor(control){if (control >= 1.0/6.0 && control <= 1./2.0) return "hsl(33,100%,42%)"; else return "hsl(33,40%,15%)"; }
+function controlGreenColor(control){if (control > 1.0/2.0) return "hsl(120,100%,42%)"; else return "hsl(120,40%,15%)"; }
+
 //Draw a simulation
 function drawSimul(){
 
     params.space_length = params.simul_data.density[0].length;
     params.time_length = params.simul_data.density.length;
     params.width = params.width_function();
+    params.position_scale = d3.scale.linear()
+                            .domain([0, params.space_length])
+                            .range([0, params.width]);
 
-    //Init the slider
-    $( "#time_slider" ).slider({ animate: "fast",
-                                 max: (params.time_length - 1),
-                                 min: 0,
-                                 slide: function( event, ui ) {params.update_simul()}});
-    //Init the play button
-    $("#play_button").click(playSimul);
     //Drawing the svg
     var svg = d3.select("#simul").append("svg");
     svg.attr("width", params.width)
        .attr("height", params.height);
 
-    params.position_scale = d3.scale.linear()
-                        .domain([0, params.space_length])
-                        .range([0, params.width]);
 
     svg.selectAll("rect")
        .data(params.simul_data.density[0])
@@ -103,7 +107,19 @@ function drawSimul(){
        .attr("fill", function(d,i) {
            return densityColors(d,i);
        });
+
+    //Drawing the control
+    initControl();
+
+    //Binding all events
     $( window ).resize(params.resize_simul);
+     //Init the slider
+    $( "#time_slider" ).slider({ animate: "fast",
+                                     max: (params.time_length - 1),
+                                     min: 0,
+                                     slide: function( event, ui ) {params.update_simul()}});
+        //Init the play button
+        $("#play_button").click(playSimul);
     consoleMessage("Simulation loaded");
     $.event.trigger({
     	type: "simulation_loaded"
@@ -121,6 +137,7 @@ function updateSimul(){
        .attr("fill", function(d,i) {
            return densityColors(d,i);
        });
+    updateControl(time);
 
 }
 
@@ -141,6 +158,7 @@ function resizeSimul(){
             return Math.floor(params.position_scale(i));
        })
        .attr("width", params.width/params.space_length+1);
+    resizeControl();
 }
 
 //Handle the Simulation play
@@ -170,3 +188,62 @@ function playSimul(){
     }
 }
 
+//Initialize the control visualization
+function initControl(){
+    var svg = d3.select("#control").append("svg")
+                                   .attr("width", params.width)
+                                   .attr("height", params.control_height);
+    var light_radius = Math.floor(params.control_offset_ratio * Math.min(params.control_width/2.0, params.control_height/6.0));
+    var signal = svg.selectAll("g")
+                   .data(params.simul_data.control[0]).enter()
+                   .append("g") //signal
+                     .attr('transform', function(d, i) {
+                               return 'translate(' + Math.floor(params.position_scale(params.simul_data.onRamps[i])) + ', 0)';
+                     });
+    signal.append("rect")
+               .attr("height",params.control_height)
+               .attr("width", params.control_width)
+               .attr("fill", "black");
+    signal.append("circle") //red light
+                .attr("cx", function(d,i){
+                    return Math.round(params.control_width/2.0);
+                })
+                .attr("cy", Math.round(params.control_height/6.0))
+                .attr("r", light_radius)
+                .attr("class", "red")
+                .attr("fill", function(d){return controlRedColor(d);});
+    signal.append("circle") //orange light
+                .attr("cx", function(d,i){
+                   return Math.round(params.control_width/2.0);
+                })
+                .attr("cy", Math.round(params.control_height/2.0))
+                .attr("r", light_radius)
+                .attr("class", "orange")
+                .attr("fill", function(d){return controlOrangeColor(d);});
+    signal.append("circle") //green light
+                .attr("cx", function(d,i){
+                   return Math.round(params.control_width/2.0);
+                })
+                .attr("cy", Math.round(5.0*params.control_height/6.0))
+                .attr("r", light_radius)
+                .attr("class", "green")
+                .attr("fill", function(d){return controlGreenColor(d);});
+}
+
+function resizeControl(){
+    var svg = d3.select("#control svg")
+                   .attr("width", params.width);
+    svg.selectAll("g")
+            .attr('transform', function(d, i) {
+                    return 'translate(' + Math.floor(params.position_scale(params.simul_data.onRamps[i])) + ', 0)';
+             });
+}
+
+function updateControl(time){
+    var svg = d3.select("#control svg");
+    var signal = svg.selectAll("g")
+                    .data(params.simul_data.control[time]);
+    signal.select(".red").attr("fill", function(d){return controlRedColor(d);});
+    signal.select(".orange").attr("fill", function(d){return controlOrangeColor(d);});
+    signal.select(".green").attr("fill", function(d){return controlGreenColor(d);});
+}

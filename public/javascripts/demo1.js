@@ -3,7 +3,7 @@
 //To be executed when the page is loaded, first simulation
 $(document).ready(function(){
     $(document).on("simulation_loaded", initJamTools);
-    initSimul(params.simul_name);
+    initSimul();
 })
 
 

@@ -4,7 +4,7 @@
 $(document).ready(function(){
     $(document).on("simulation_loaded", initMorseTools);
     params.width_function = getMorseSimulWidth;
-    initSimul(params.simul_name);
+    initSimul();
 
 });
 //Draw a simulation
