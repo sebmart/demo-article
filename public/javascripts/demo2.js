@@ -26,7 +26,7 @@ NProgress.start();
 
     d3.xhr("/morse")
     .header("Content-Type", "application/json")
-    .post(JSON.stringify({scenario: params.demo12_scenario, initials : text}), function(error, data) {
+    .post(JSON.stringify({scenario: params.demo2_scenario, initials : text}), function(error, data) {
         if (error) return console.warn(error);
         $("#morse_button,#play_button").removeAttr("disabled")
             NProgress.done();

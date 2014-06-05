@@ -17,10 +17,11 @@ var params = {
 //to be modified by hand
     height: 60,
     play_time: 8,
+    paint_simul_name: "test2",
     simul_name_demo1 : "box-jam",
     simul_name_demo2 : "morse",
-    demo12_scenario : "box-jam",
-    demo12_scenario : "morse",
+    demo1_scenario : "box-jam",
+    demo2_scenario : "morse",
     morse_delay : 2000,
     morse_height_ratio : .3,
     paint_ratio : 16./9.,

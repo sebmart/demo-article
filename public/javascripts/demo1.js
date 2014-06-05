@@ -36,7 +36,7 @@ NProgress.start();
     var tval = $( "#jam_time_slider" ).slider("values");
     d3.xhr("/jam")
     .header("Content-Type", "application/json")
-    .post(JSON.stringify({scenario: params.demo12_scenario, xMin: xval[0], xMax : xval[1], tMin: tval[0], tMax : tval[1]}), function(error, data) {
+    .post(JSON.stringify({scenario: params.demo1_scenario, xMin: xval[0], xMax : xval[1], tMin: tval[0], tMax : tval[1]}), function(error, data) {
     NProgress.done();
         if (error) return console.warn(error);
         $("#jam_button,#play_button").removeAttr("disabled");
