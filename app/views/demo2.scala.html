@@ -3,14 +3,19 @@
 
 @main("Demo 2 : Write your initials",menu="demo2") {
 
-<h1 class="centralmessage">Act II: Morse Attack</h1>
-Type your initials and watch a "personalized" jam take place along the freeway.
-        <br />
+<br />
+Type your initials and watch a "personalized" jam take place along the freeway. <br />
 <button class="btn btn-large advance-btn"><a href="/demo3">Continue to Act III</a></button>
-<div id="time_handler">
-    <button id="play_button" type="button">Play</button>
-    <div id="time_slider"></div>
-</div>
+
+<table id="time_container">
+    <tr id="time_container2">
+        <td id="clock"></td>
+        <td id="time_handler">
+            <button id="play_button" type="button" class="btn">Play</button>
+            <div id="time_slider"></div>
+        </td>
+    </tr>
+</table>
 
 <table id="simul_container">
     <tr id="simul_container3">
@@ -24,7 +29,7 @@ Type your initials and watch a "personalized" jam take place along the freeway.
 </table>
 <div id="morse_bloc">
     <input id="morse_text" value="CAL">
-    <button id="morse_button" type="button">Create your Jam !</button>
+    <button id="morse_button" type="button" class="btn">Create your Jam !</button>
 </div>
 @console("*** Demo 2 : write your initials ***")
 }

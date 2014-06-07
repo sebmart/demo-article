@@ -8,10 +8,7 @@ body {
 }
 
 #time_handler {
-    width: 75%;
-    margin-left: auto;
-    margin-right: auto;
-    margin-bottom: 30px;
+    width : 100%;
     text-align : right;
 }
 
@@ -79,5 +76,9 @@ padding-right: 5px;
 font-family: monospace;
 }
 #simul {
-    height : 60px;
+    height : 160px;
+}
+
+#clock {
+        padding : 20px;
 }

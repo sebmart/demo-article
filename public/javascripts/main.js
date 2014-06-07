@@ -16,10 +16,10 @@ function clearConsole() {
 var params = {
 //to be modified by hand
    //all simulations
-    height: 60,
+    height: 160,
     play_time: 9,
     simul_name_demo1 : "box-jam",
-
+    real_total_time : 120,
 
    //control
     control_height : 60,
@@ -77,9 +77,9 @@ function densityColors(dens,i){
     critical_density = params.simul_data.criticalDensity[i];
     max_density = params.simul_data.maxDensity[i];
     if(dens < critical_density)
-        return "hsl(90,69%," +  40 *( 2 - dens/critical_density)+"%)";
+        return "hsl(90,100%," +  40 *( 2 - dens/critical_density)+"%)";
     else
-        return "hsl(" + 90 * (max_density - dens)/(max_density - critical_density) + ",69%," + (50  - 10 * (dens - critical_density)/(max_density - critical_density)) + "%)"
+        return "hsl(" + 90 * (max_density - dens)/(max_density - critical_density) + ",100%," + (50  - 10 * (dens - critical_density)/(max_density - critical_density)) + "%)"
 }
 
 function controlRedColor(control){if (control < 1.0/6.0) return "hsl(0,100%,42%)"; else return "hsl(0,40%,15%)"; }
@@ -101,6 +101,17 @@ function drawSimul(){
     svg.attr("width", params.width)
        .attr("height", params.height);
 
+    svg.append("defs")
+           .append("pattern")
+                .attr("id", "road")
+                .attr("width","160")
+                .attr("height","160")
+                .attr("patternUnits","userSpaceOnUse")
+                .append("image")
+                    .attr("width","160px")
+                    .attr("height","160px")
+                    .attr("xlink:href", "/assets/images/bigroad.png");
+
 
     svg.selectAll("rect")
        .data(params.simul_data.density[0])
@@ -115,7 +126,12 @@ function drawSimul(){
        .attr("fill", function(d,i) {
            return densityColors(d,i);
        });
-
+    svg.append("rect")
+        .attr("width", params.width)
+        .attr("height", params.height)
+        .attr("fill", "url(#road)");
+    //Drawing the clock
+    initClock();
     //Drawing the control
     initControl();
 
@@ -126,8 +142,8 @@ function drawSimul(){
                                      max: (params.time_length - 1),
                                      min: 0,
                                      slide: function( event, ui ) {params.update_simul()}});
-        //Init the play button
-        $("#play_button").click(playSimul);
+    //Init the play button
+    $("#play_button").click(playSimul);
     consoleMessage("Simulation loaded");
     $.event.trigger({
     	type: "simulation_loaded"
@@ -145,6 +161,8 @@ function updateSimul(){
        .attr("fill", function(d,i) {
            return densityColors(d,i);
        });
+
+    updateClock(time);
     updateControl(time);
 
 }
@@ -266,13 +284,62 @@ function updateControl(time){
     signal.select(".red").attr("fill", function(d){return controlRedColor(d);});
     signal.select(".orange").attr("fill", function(d){return controlOrangeColor(d);});
     signal.select(".green").attr("fill", function(d){return controlGreenColor(d);});
-}function resetSim() {
-$("#time_slider").slider("value", 0);
-sleep(500, function() {
-$("#play_button").click();
-        if (!params.play) {
-        $("#play_button").click();
-        }
-});
-        }
+}
 
+function resetSim() {
+    $("#time_slider").slider("value", 0);
+    sleep(500, function() {
+    $("#play_button").click();
+            if (!params.play) {
+            $("#play_button").click();
+            }
+    });
+}
+
+function initClock(){
+    var svg = d3.select("#clock").append("svg")
+                                    .attr("width", "160px")
+                                    .attr("height", "160px");
+    //clock background
+    svg.append("image")
+           .attr("width","160px")
+           .attr("height","160px")
+           .attr("xlink:href", "/assets/images/clock.png");
+
+    //hours :
+    svg.append("rect")
+            .attr("id","hours")
+            .attr("x",79)
+            .attr("y", 35)
+            .attr("width", 3)
+            .attr("height",46)
+            .attr("fill", "#282828")
+            .attr("transform", "rotate(" + 4*30 + "," + 80 + "," + 80 + ")");
+
+    //minutes :
+    svg.append("rect")
+            .attr("id","minutes")
+            .attr("x",79)
+            .attr("y", 20)
+            .attr("width", 3)
+            .attr("height",60)
+            .attr("fill", "#535353")
+            .attr("transform", "rotate(" + 0*30 + "," + 80 + "," + 80 + ")");
+
+    //middle circle :
+    svg.append("circle")
+            .attr("cx",81)
+            .attr("cy", 80)
+            .attr("r", 3)
+            .attr("fill", "#535353");
+}
+
+function updateClock(time){
+    var minutes = time / (1.0*params.time_length) * params.real_total_time;
+
+    var hours = (minutes/60.) + 4;
+    minutes = minutes - 60 * Math.floor(hours - 4);
+    var svg = d3.select("#clock");
+    svg.select("#hours").attr("transform", "rotate(" + hours*30 + "," + 80 + "," + 80 + ")");
+    svg.select("#minutes").transition().duration(params.play_time * 1000 / (1.5*params.time_length)).attr("transform", "rotate(" + minutes*6 + "," + 80 + "," + 80 + ")");
+}

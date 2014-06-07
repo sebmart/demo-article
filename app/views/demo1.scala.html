@@ -3,22 +3,28 @@
 
 @main("Controlling the Freeway",menu="demo1") {
 
-<h1 class="centralmessage">Act I: Jam Creator</h1>
-Choose an interval along the freeway and time duration to create a hyper-localized jam.
-        <br />
+<br />
+Choose an interval along the freeway and time duration to create a hyper-localized jam.<br />
 <button class="btn btn-large advance-btn"><a href="/demo2">Continue to Act II</a></button>
-<div id="time_handler">
-    <button id="play_button" type="button">Play</button>
-    <div id="time_slider"></div>
-    <div id="jam_time_slider"></div>
-</div>
+
+
+<table id="time_container">
+    <tr id="time_container2">
+        <td id="clock"></td>
+        <td id="time_handler">
+            <button id="play_button" type="button" class="btn">Play</button>
+            <div id="time_slider"></div>
+            <div id="jam_time_slider"></div>
+        </td>
+    </tr>
+</table>
 <div id="simul_container">
     <div id="control"></div>
     <div id="simul"></div>
 </div>
 <div id="space_handler">
     <div id="jam_space_slider"></div>
-    <button id="jam_button" type="button">Create your Jam !</button>
+    <button id="jam_button" type="button" class="btn">Create your Jam !</button>
 </div>
 
 

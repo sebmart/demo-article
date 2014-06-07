@@ -2,15 +2,21 @@
 
 
 @main("Controlling the Freeway",menu="freeway") {
-
-<h1 class="centralmessage">Freeway Speed Viewer</h1>
-Watch the evolution of the speed of traffic on a freeway over a typical rush hour period.
-        <br />
+<br />
+Watch the evolution of the speed of traffic on a freeway over a typical rush hour period.<br />
 <button class="btn btn-large advance-btn"><a href="/demo1">Continue to Act I</a></button>
-<div id="time_handler">
-    <button id="play_button" type="button">Play</button>
-    <div id="time_slider"></div>
-</div>
+
+
+<table id="time_container">
+    <tr id="time_container2">
+        <td id="clock"></td>
+        <td id="time_handler">
+            <button id="play_button" type="button" class="btn">Play</button>
+            <div id="time_slider"></div>
+        </td>
+    </tr>
+</table>
+
 <div id="simul_container">
     <div id="control"></div>
     <div id="simul">
