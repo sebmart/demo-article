@@ -26,7 +26,7 @@ var params = {
     control_width : 20,
     control_offset_ratio : .9,
    //demo1
-    demo1_scenario : "box-jam-standard",
+    demo1_scenario : "box-jam",
    //demo2
     morse_delay : 2500,
     morse_height_ratio : .3,
