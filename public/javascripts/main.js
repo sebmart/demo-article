@@ -35,8 +35,10 @@ var params = {
 
    //demo3
     paint_ratio : 16./9.,
-    paint_simul_name : "test2",
+    paint_simul_name : "sideways-cal",
 
+    // density color hack
+    densityColorFactor : 1.0,
 
 
 //Automatically set up
@@ -74,7 +76,7 @@ function getSimulWidth(){ return $("#simul_container").width()}
 
 //Return the color given the density (Don't accept negative densities !)
 function densityColors(dens,i){
-    critical_density = params.simul_data.criticalDensity[i];
+    critical_density = params.simul_data.criticalDensity[i] * params.densityColorFactor;
     max_density = params.simul_data.maxDensity[i];
     if(dens < critical_density)
         return "hsl(90,100%," +  40 *( 2 - dens/critical_density)+"%)";

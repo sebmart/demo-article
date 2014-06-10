@@ -7,6 +7,7 @@ $(document).ready(function(){
     params.resize_simul = paintResizeSimul;
     params.control_height = 24;
     params.control_width = 8;
+    params.densityColorFactor = 0.1;
     initSimul(params.paint_simul_name);
 });
 
