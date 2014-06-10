@@ -18,7 +18,7 @@ var params = {
    //all simulations
     height: 160,
     play_time: 9,
-    simul_name_demo1 : "box-jam",
+    simul_name_demo1 : "box-jam-standard",
     real_total_time : 120,
 
    //control
@@ -26,7 +26,7 @@ var params = {
     control_width : 20,
     control_offset_ratio : .9,
    //demo1
-    demo1_scenario : "box-jam",
+    demo1_scenario : "box-jam-standard",
    //demo2
     morse_delay : 2500,
     morse_height_ratio : .3,
@@ -129,6 +129,7 @@ function drawSimul(){
            return densityColors(d,i);
        });
     svg.append("rect")
+        .attr("id", "road_background")
         .attr("width", params.width)
         .attr("height", params.height)
         .attr("fill", "url(#road)");
@@ -186,6 +187,10 @@ function resizeSimul(){
             return Math.floor(params.position_scale(i));
        })
        .attr("width", params.width/params.space_length+1);
+
+        svg.select("#road_background")
+            .attr("width", params.width)
+
     resizeControl();
 }
 
