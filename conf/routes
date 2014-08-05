@@ -10,11 +10,16 @@ GET     /freeway                    controllers.Application.freeway
 GET     /demo1                      controllers.Application.demo1
 GET     /demo2                      controllers.Application.demo2
 GET     /demo3                      controllers.Application.demo3
+GET     /catchme                    controllers.Application.catchme
 
 #JSON
 GET     /simulation/*file           controllers.Application.getSimulation(file)
+GET     /catchme_init               controllers.Application.initCatchme
 POST    /morse                      controllers.Application.morse
 POST    /jam                        controllers.Application.getJam
+POST    /catchme_simulation         controllers.Application.catchmeSim
+POST    /catchme_grid        controllers.Application.catchmeGrid
+POST    /catchme_path               controllers.Application.catchmePath
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

@@ -57,7 +57,8 @@ var params = {
     update_function : playUpdate,
     update_simul : updateSimul,
     resize_simul : resizeSimul,
-    width_function : getSimulWidth
+    width_function : getSimulWidth,
+    paint_height : void 0
 
 }
 
@@ -74,14 +75,52 @@ function initSimul(simulName){
 //return the width of the simulation (depend on the window size)
 function getSimulWidth(){ return $("#simul_container").width()}
 
+function hslToRgb(h, s, l){
+    h = h/360;
+    s = s/100;
+    l = l/100;
+    var r, g, b;
+
+    if(s == 0){
+        r = g = b = l; // achromatic
+    }else{
+        function hue2rgb(p, q, t){
+            if(t < 0) t += 1;
+            if(t > 1) t -= 1;
+            if(t < 1/6) return p + (q - p) * 6 * t;
+            if(t < 1/2) return q;
+            if(t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+            return p;
+        }
+
+        var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+        var p = 2 * l - q;
+        r = hue2rgb(p, q, h + 1/3);
+        g = hue2rgb(p, q, h);
+        b = hue2rgb(p, q, h - 1/3);
+    }
+
+    return "rgb("+ Math.round(r * 255) + "," + Math.round(g * 255) + "," + Math.round(b * 255) + ")";
+}
+
 //Return the color given the density (Don't accept negative densities !)
 function densityColors(dens,i){
     critical_density = params.simul_data.criticalDensity[i] * params.densityColorFactor;
     max_density = params.simul_data.maxDensity[i];
-    if(dens < critical_density)
-        return "hsl(90,100%," +  40 *( 2 - dens/critical_density)+"%)";
+//    return hslToRgb(90 * (1 - dens/max_density),100,50)
+//    if(dens < critical_density)
+//        return "hsl(90,100%," +  40 *( 2 - dens/critical_density)+"%)";
+//    else
+//        return "hsl(" + 90 * (max_density - dens)/(max_density - critical_density) + ",100%," + (50  - 10 * (dens - critical_density)/(max_density - critical_density)) + "%)"
+//
+    if(dens < 0.9 * critical_density)
+        return hslToRgb(90,100,50 + 30 *( 1 - dens/(0.9*critical_density)));
+    else if(dens < critical_density)
+       return hslToRgb(90 - 40 * (dens - 0.9 * critical_density)/(critical_density - 0.9 * critical_density),100,50);
+    else if(dens < critical_density * 1.1)
+       return hslToRgb((50 - 20 * (dens - critical_density)/(1.1 * critical_density - critical_density)),100,50);
     else
-        return "hsl(" + 90 * (max_density - dens)/(max_density - critical_density) + ",100%," + (50  - 10 * (dens - critical_density)/(max_density - critical_density)) + "%)"
+       return hslToRgb(30 * (max_density - dens)/(max_density - critical_density * 1.1),100,(50  - 30 * (dens - critical_density)/(max_density - critical_density * 1.1)));
 }
 
 function controlRedColor(control){if (control < 1.0/6.0) return "hsl(0,100%,42%)"; else return "hsl(0,40%,15%)"; }

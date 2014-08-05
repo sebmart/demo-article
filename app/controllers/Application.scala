@@ -27,11 +27,19 @@ object Application extends Controller {
     Ok(views.html.demo3())
   }
 
+  def catchme = Action {
+    Ok(views.html.catchme())
+  }
+
 
   /* JSON
   *********************/
   def getSimulation(simulName : String) = Action {
     Ok(simulation.Visualization.loadExistingSim(simulName))
+  }
+
+  def initCatchme = Action {
+    Ok(simulation.Visualization.initCatchme)
   }
 
   def morse = Action(parse.json) { request =>
@@ -42,6 +50,17 @@ object Application extends Controller {
 
   def getJam = Action(parse.json) { request =>
     Ok(simulation.Visualization.loadJam(request.body))
-    }
+  }
 
+  def catchmeSim = Action(parse.json) { request =>
+    Ok(simulation.Visualization.loadCatchme(request.body))
+  }
+
+  def catchmeGrid = Action(parse.json) { request =>
+    Ok(simulation.Visualization.loadGrid(request.body))
+  }
+
+  def catchmePath = Action(parse.json) { request =>
+    Ok(simulation.Visualization.loadPath(request.body))
+  }
 }

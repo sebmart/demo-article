@@ -1,0 +1,48 @@
+@()
+
+
+@main("Catch me if you can",menu="catchme") {
+
+<br />
+Multi-objective optimization
+<br />
+
+<div id="cmSpacetime">
+</div>
+<table id="objectiveTable">
+<tr><td>f1 : Driver travel time</td><td>Coef : <span id="coef1" class="important"></span></td><td>Value : <span id="value1" class="important">0</span></td><td>Value after coef: <span id="coefValue1" class="important"></span></td></tr>
+    <tr><td colspan="4"><div id="slider1" class="objectiveSlider"></div></td></tr>
+<tr><td>f2 : Density behind</td><td>Coef : <span id="coef2" class="important"></span></td><td>Value : <span id="value2" class="important">0</span></td><td>Value after coef: <span id="coefValue2" class="important"></span></td></tr>
+    <tr><td colspan="4"><div id="slider2" class="objectiveSlider"></div></td></tr>
+<tr><td>f3 : Trajectory Boundary</td><td>Coef : <span id="coef3" class="important"></span></td><td>Value : <span id="value3" class="important">0</span></td><td>Value after coef: <span id="coefValue3" class="important"></span></td></tr>
+    <tr><td colspan="4"><div id="slider3" class="objectiveSlider"></div></td></tr>
+<tr><td>f4 : Total Travel Time</td><td>Coef : <span id="coef4" class="important"></span></td><td>Value : <span id="value4" class="important">0</span></td><td>Value after coef: <span id="coefValue4" class="important"></span></td></tr>
+    <tr><td colspan="4"><div id="slider4" class="objectiveSlider"></div></td></tr>
+</table>
+<button id="run_sim" type="button" class="btn">Run simulation</button><button id="grid_sim" type="button" class="btn">Auto Exploration Mode</button>
+
+<table id="cmResults">
+    <thead>
+        <tr>
+            <th colspan="2">f1 : Driver travel time</th>
+            <th colspan="2">f2 : Density behind</th>
+            <th colspan="2">f3 : Trajectory Boundary</th>
+            <th colspan="2">f4 : Total Travel Time</th>
+        </tr>
+        <tr>
+            <th>Coef</th>
+            <th>Result</th>
+            <th>Coef</th>
+            <th>Result</th>
+            <th>Coef</th>
+            <th>Result</th>
+            <th>Coef</th>
+            <th>Result</th>
+        </tr>
+    </thead>
+    <tbody>
+
+    </tbody>
+</table>
+
+}

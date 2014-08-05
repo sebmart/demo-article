@@ -82,3 +82,19 @@ font-family: monospace;
 #clock {
         padding : 20px;
 }
+#objectiveTable{
+    width : 801px;
+}
+.objectiveSlider{
+    width : 100%;
+}
+#objectiveTable td{
+    padding-top : 5px;
+    padding-bottom : 5px;
+}
+.important{
+    font-weight : bold;
+}
+#cmResults{
+    width: 100%;
+}
