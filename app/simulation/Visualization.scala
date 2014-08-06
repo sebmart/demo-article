@@ -101,31 +101,31 @@ object Visualization {
 
   def initCatchme() : JsValue= {
 
-//    val noControl = MeteringPolicy(FreewaySimulator.noControl(scen), scen)
-//    currentSim = FreewaySimulator.simpleSim(scen,noControl.flatRates)
-//    currentCoefs = Coefs(0.0,0.0,0.0,0.0)
-//    val objList = IndexedSeq[ObjectiveConstructor](
-//      new CatchMe.VehicleTravelTime,
-//      new CatchMe.BehindDensity,
-//      new CatchMe.TrajectoryBoundary,
-//      new TotalTravelTimeObjective(scen)
-//    )
-//    val density = currentSim.density.map(_.toIndexedSeq).toIndexedSeq.init
-//    val values = objList.map(_.constructObjective(scen,0).eval(currentSim,noControl.flatRates))
-//
-//    JsonConverter.catchmeSimToJson(CatchmeSim(VisualSim(density, noControl.unlinearized.map(_.toIndexedSeq).toIndexedSeq, scen.fw.onramps.tail, scen.fw.rhoCrits, scen.fw.rhoMaxs), CatchMe.driverPath(currentSim,scen),values))
+    val noControl = MeteringPolicy(FreewaySimulator.noControl(scen), scen)
+    currentSim = FreewaySimulator.simpleSim(scen,noControl.flatRates)
+    currentCoefs = Coefs(0.0,0.0,0.0,0.0)
+    val objList = IndexedSeq[ObjectiveConstructor](
+      new CatchMe.VehicleTravelTime,
+      new CatchMe.BehindDensity,
+      new CatchMe.TrajectoryBoundary,
+      new TotalTravelTimeObjective(scen)
+    )
+    val density = currentSim.density.map(_.toIndexedSeq).toIndexedSeq.init
+    val values = objList.map(_.constructObjective(scen,0).eval(currentSim,noControl.flatRates))
+
+    JsonConverter.catchmeSimToJson(CatchmeSim(VisualSim(density, noControl.unlinearized.map(_.toIndexedSeq).toIndexedSeq, scen.fw.onramps.tail, scen.fw.rhoCrits, scen.fw.rhoMaxs), CatchMe.driverPath(currentSim,scen),values))
 //-------------------------------------------
-
-    val sc = Source.fromFile(webSimPath + "calmorse.json").getLines()
-    val simParams = sc.next().split(":").map(x => {val l = x.split(","); (l(0),l(1))}).toMap
-    val scen : FreewayScenario = loadScenario(simParams("network"))
-
-    val simControl = MeteringPolicy(sc.next().split(":").map(_.split(",").map(_.toDouble)).flatten,scen).unlinearized.map(_.toIndexedSeq).toIndexedSeq
-    val density = sc.next().split(":").map(_.split(",").map(x =>x.toDouble).toIndexedSeq).toIndexedSeq
-
-    val criticalDensity = scen.fw.rhoCrits
-    val maxDensity = scen.fw.rhoMaxs
-    JsonConverter.visualSimToJson(VisualSim(density, simControl, scen.fw.onramps.tail ,criticalDensity, maxDensity))
+//
+//    val sc = Source.fromFile(webSimPath + "calmorse.json").getLines()
+//    val simParams = sc.next().split(":").map(x => {val l = x.split(","); (l(0),l(1))}).toMap
+//    val scen : FreewayScenario = loadScenario(simParams("network"))
+//
+//    val simControl = MeteringPolicy(sc.next().split(":").map(_.split(",").map(_.toDouble)).flatten,scen).unlinearized.map(_.toIndexedSeq).toIndexedSeq
+//    val density = sc.next().split(":").map(_.split(",").map(x =>x.toDouble).toIndexedSeq).toIndexedSeq
+//
+//    val criticalDensity = scen.fw.rhoCrits
+//    val maxDensity = scen.fw.rhoMaxs
+//    JsonConverter.visualSimToJson(VisualSim(density, simControl, scen.fw.onramps.tail ,criticalDensity, maxDensity))
 }
 
   def catchmeScen() : FreewayScenario = {
